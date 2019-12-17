@@ -4,6 +4,8 @@
 const canvas = document.getElementById("jsCanvas");
 const ctx = canvas.getContext('2d'); // context of canvas: context is what control canvas
 
+const colors = document.getElementsByClassName("jsColor");
+
 // pixel 을 먼저 지정한다
 // css에서 지정해준 size는 화면에 보이기 위한 pixel 이라면
 // 아래 초기화 해주는 pixel은 js에서 canvas element가 pixel을
@@ -37,8 +39,9 @@ function onMouseMove(event) { // detect all the movement and draw a line
     }
 }
 
-function onMouseDown(event) {
-    painting = true;    
+function handleColorClick(event) {
+    const color = event.target.style.backgroundColor;
+    ctx.strokeStyle = color;
 }
 
 if (canvas) {
@@ -47,3 +50,7 @@ if (canvas) {
     canvas.addEventListener("mouseup", stopPainting);
     canvas.addEventListener("mouseleave", stopPainting);
 }
+
+Array.from(colors).forEach(color => 
+    color.addEventListener("click", handleColorClick)
+    );
