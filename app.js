@@ -3,20 +3,25 @@
 */
 const canvas = document.getElementById("jsCanvas");
 const ctx = canvas.getContext('2d'); // context of canvas: context is what control canvas
-
 const colors = document.getElementsByClassName("jsColor");
+const range = document.getElementById("jsRange");
+const mode = document.getElementById("jsMode");
 
+const INITIAL_COLOR = "#2c2c2c"
+const CANVAS_SIZE = 700;
 // pixel 을 먼저 지정한다
 // css에서 지정해준 size는 화면에 보이기 위한 pixel 이라면
 // 아래 초기화 해주는 pixel은 js에서 canvas element가 pixel을
 // 이용하기 위해 알아야 하는 가로, 세로 픽셀의 개수이다.
-canvas.width = 700;
-canvas.height = 700;
+canvas.width = CANVAS_SIZE;
+canvas.height = CANVAS_SIZE;
 
-ctx.strokeStyle = "#2c2c2c";    //  init line color
+ctx.strokeStyle = INITIAL_COLOR;    //  init line color
+ctx.fillStyle = INITIAL_COLOR;
 ctx.lineWidth = 2.5;            //  init line width
 
 let painting = false;
+let filling = false;
 
 function stopPainting() {
     painting = false;
@@ -33,7 +38,7 @@ function onMouseMove(event) { // detect all the movement and draw a line
     if (!painting) {
         ctx.beginPath(); // create new path
         ctx.moveTo(x, y); // move starting point of a new sub-path line to (x, y)
-    } else {
+    } else if (!filling){
         ctx.lineTo(x, y); // create line
         ctx.stroke(); // draw current sub-path with the current stroke style
     }
@@ -42,6 +47,28 @@ function onMouseMove(event) { // detect all the movement and draw a line
 function handleColorClick(event) {
     const color = event.target.style.backgroundColor;
     ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+}
+
+function handleRangeChange(event) {
+    const size = event.target.value;
+    ctx.lineWidth = size;
+}
+
+function handleModeClick(event) {
+    if (filling) {
+        filling = false;
+        mode.innerText = "FILL"
+    } else {
+        filling = true;
+        mode.innerText = "PAINT"
+    }
+}
+
+function handleCanvasClick(event) {
+    if (filling) {
+        ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    }
 }
 
 if (canvas) {
@@ -49,8 +76,19 @@ if (canvas) {
     canvas.addEventListener("mousedown", startPainting);
     canvas.addEventListener("mouseup", stopPainting);
     canvas.addEventListener("mouseleave", stopPainting);
+    // fill
+    canvas.addEventListener("click", handleCanvasClick);
 }
 
 Array.from(colors).forEach(color => 
     color.addEventListener("click", handleColorClick)
-    );
+);
+
+
+if (range) {
+    range.addEventListener("input", handleRangeChange);
+}
+
+if (mode) {
+    mode.addEventListener("click", handleModeClick);
+}
